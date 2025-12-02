@@ -1,0 +1,1168 @@
+<!doctype html>
+<html lang="id">
+ <head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>K3LH Learning Game - SMK Kelas 10</title>
+  <script src="/_sdk/element_sdk.js"></script>
+  <style>
+    body {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100%;
+      width: 100%;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    .container {
+      width: 100%;
+      min-height: 100%;
+      padding: 2rem;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .page {
+      display: none;
+      width: 100%;
+      max-width: 900px;
+      animation: fadeIn 0.5s ease-in;
+    }
+
+    .page.active {
+      display: block;
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .card {
+      background: white;
+      border-radius: 20px;
+      padding: 2.5rem;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+      margin-bottom: 2rem;
+    }
+
+    h1 {
+      color: #667eea;
+      text-align: center;
+      font-size: 2.5rem;
+      margin-bottom: 1rem;
+    }
+
+    h2 {
+      color: #764ba2;
+      font-size: 1.8rem;
+      margin-bottom: 1.5rem;
+    }
+
+    h3 {
+      color: #667eea;
+      font-size: 1.3rem;
+      margin-bottom: 1rem;
+    }
+
+    .subtitle {
+      text-align: center;
+      color: #666;
+      font-size: 1.1rem;
+      margin-bottom: 2rem;
+    }
+
+    .progress-container {
+      background: #e0e0e0;
+      border-radius: 50px;
+      height: 30px;
+      margin: 2rem 0;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .progress-bar {
+      background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+      height: 100%;
+      border-radius: 50px;
+      transition: width 0.5s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-weight: bold;
+      font-size: 0.9rem;
+    }
+
+    .btn {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      border: none;
+      padding: 1rem 2.5rem;
+      font-size: 1.1rem;
+      border-radius: 50px;
+      cursor: pointer;
+      transition: transform 0.2s, box-shadow 0.2s;
+      font-weight: bold;
+      margin: 0.5rem;
+    }
+
+    .btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 25px rgba(102, 126, 234, 0.4);
+    }
+
+    .btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    .btn-secondary {
+      background: #6c757d;
+    }
+
+    .btn-secondary:hover {
+      box-shadow: 0 10px 25px rgba(108, 117, 125, 0.4);
+    }
+
+    .btn-group {
+      display: flex;
+      justify-content: center;
+      gap: 1rem;
+      flex-wrap: wrap;
+      margin-top: 2rem;
+    }
+
+    .stats-container {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1.5rem;
+      margin: 2rem 0;
+    }
+
+    .stat-box {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      padding: 1.5rem;
+      border-radius: 15px;
+      text-align: center;
+    }
+
+    .stat-value {
+      font-size: 2.5rem;
+      font-weight: bold;
+      margin-bottom: 0.5rem;
+    }
+
+    .stat-label {
+      font-size: 1rem;
+      opacity: 0.9;
+    }
+
+    .badge-container {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      gap: 1.5rem;
+      margin: 2rem 0;
+    }
+
+    .badge-item {
+      background: #f8f9fa;
+      padding: 1.5rem;
+      border-radius: 15px;
+      text-align: center;
+      transition: transform 0.3s;
+      border: 3px solid transparent;
+    }
+
+    .badge-item.earned {
+      background: linear-gradient(135deg, #ffeaa7 0%, #fdcb6e 100%);
+      border-color: #f39c12;
+      transform: scale(1.05);
+    }
+
+    .badge-item:hover {
+      transform: scale(1.05);
+    }
+
+    .badge-icon {
+      font-size: 3rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .badge-name {
+      font-weight: bold;
+      color: #333;
+      margin-bottom: 0.3rem;
+    }
+
+    .badge-desc {
+      font-size: 0.85rem;
+      color: #666;
+    }
+
+    .quiz-question {
+      background: #f8f9fa;
+      padding: 1.5rem;
+      border-radius: 15px;
+      margin-bottom: 1.5rem;
+    }
+
+    .quiz-options {
+      display: flex;
+      flex-direction: column;
+      gap: 0.8rem;
+      margin-top: 1rem;
+    }
+
+    .quiz-option {
+      background: white;
+      padding: 1rem;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: all 0.3s;
+      border: 2px solid #e0e0e0;
+    }
+
+    .quiz-option:hover {
+      border-color: #667eea;
+      transform: translateX(5px);
+    }
+
+    .quiz-option.selected {
+      background: #667eea;
+      color: white;
+      border-color: #667eea;
+    }
+
+    .quiz-option.correct {
+      background: #00b894;
+      color: white;
+      border-color: #00b894;
+    }
+
+    .quiz-option.incorrect {
+      background: #d63031;
+      color: white;
+      border-color: #d63031;
+    }
+
+    .material-content {
+      line-height: 1.8;
+      color: #333;
+      margin: 1.5rem 0;
+    }
+
+    .material-content p {
+      margin-bottom: 1rem;
+    }
+
+    .material-content ul {
+      margin-left: 1.5rem;
+      margin-bottom: 1rem;
+    }
+
+    .material-content li {
+      margin-bottom: 0.5rem;
+    }
+
+    .login-form {
+      max-width: 400px;
+      margin: 0 auto;
+    }
+
+    .form-group {
+      margin-bottom: 1.5rem;
+    }
+
+    .form-group label {
+      display: block;
+      margin-bottom: 0.5rem;
+      font-weight: bold;
+      color: #333;
+    }
+
+    .form-group input {
+      width: 100%;
+      padding: 0.8rem;
+      border: 2px solid #e0e0e0;
+      border-radius: 10px;
+      font-size: 1rem;
+      transition: border-color 0.3s;
+    }
+
+    .form-group input:focus {
+      outline: none;
+      border-color: #667eea;
+    }
+
+    .error-message {
+      background: #ff7675;
+      color: white;
+      padding: 1rem;
+      border-radius: 10px;
+      margin-bottom: 1rem;
+      text-align: center;
+    }
+
+    .success-message {
+      background: #00b894;
+      color: white;
+      padding: 1rem;
+      border-radius: 10px;
+      margin-bottom: 1rem;
+      text-align: center;
+    }
+
+    .dashboard-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 1.5rem;
+    }
+
+    .dashboard-table th,
+    .dashboard-table td {
+      padding: 1rem;
+      text-align: left;
+      border-bottom: 1px solid #e0e0e0;
+    }
+
+    .dashboard-table th {
+      background: #667eea;
+      color: white;
+      font-weight: bold;
+    }
+
+    .dashboard-table tr:hover {
+      background: #f8f9fa;
+    }
+
+    .quiz-result {
+      background: linear-gradient(135deg, #00b894 0%, #00cec9 100%);
+      color: white;
+      padding: 2rem;
+      border-radius: 15px;
+      text-align: center;
+      margin: 2rem 0;
+    }
+
+    .quiz-result h3 {
+      color: white;
+      margin-bottom: 1rem;
+    }
+
+    .quiz-result-score {
+      font-size: 3rem;
+      font-weight: bold;
+      margin: 1rem 0;
+    }
+
+    .student-name-input {
+      max-width: 400px;
+      margin: 2rem auto;
+    }
+
+    @media (max-width: 768px) {
+      .container {
+        padding: 1rem;
+      }
+
+      .card {
+        padding: 1.5rem;
+      }
+
+      h1 {
+        font-size: 2rem;
+      }
+
+      h2 {
+        font-size: 1.5rem;
+      }
+
+      .stats-container {
+        grid-template-columns: 1fr;
+      }
+
+      .badge-container {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+  <style>@view-transition { navigation: auto; }</style>
+  <script src="/_sdk/data_sdk.js" type="text/javascript"></script>
+  <script src="https://cdn.tailwindcss.com" type="text/javascript"></script>
+ </head>
+ <body>
+  <div class="container"><!-- Landing Page -->
+   <div id="landing" class="page active">
+    <div class="card">
+     <h1 id="app-title">🎮 K3LH Learning Game</h1>
+     <p class="subtitle" id="landing-subtitle">Belajar Keselamatan, Kesehatan Kerja, dan Lingkungan Hidup dengan cara yang menyenangkan!</p>
+     <div class="student-name-input">
+      <div class="form-group"><label for="student-name">Masukkan Nama Anda:</label> <input type="text" id="student-name" placeholder="Nama lengkap">
+      </div>
+     </div>
+     <div class="progress-container">
+      <div class="progress-bar" id="landing-progress">
+       0%
+      </div>
+     </div>
+     <div class="btn-group"><button class="btn" onclick="startLearning()">🚀 Mulai Belajar</button> <button class="btn btn-secondary" onclick="showPage('teacher-login')">👨‍🏫 Dashboard Guru</button>
+     </div>
+    </div>
+   </div><!-- Module 1 - Pembelajaran -->
+   <div id="module1" class="page">
+    <div class="card">
+     <h2 id="module-title">📚 Modul 1: Pengenalan K3LH</h2>
+     <div class="material-content">
+      <h3>Apa itu K3LH?</h3>
+      <p>K3LH adalah singkatan dari Keselamatan dan Kesehatan Kerja serta Lingkungan Hidup. K3LH merupakan aspek penting dalam dunia kerja yang bertujuan untuk melindungi pekerja dari bahaya dan risiko yang dapat terjadi di tempat kerja.</p>
+      <h3>Pentingnya K3LH:</h3>
+      <ul>
+       <li>Mencegah kecelakaan kerja dan penyakit akibat kerja</li>
+       <li>Meningkatkan produktivitas dan efisiensi kerja</li>
+       <li>Menjaga kelestarian lingkungan hidup</li>
+       <li>Memenuhi regulasi dan standar keselamatan</li>
+       <li>Menciptakan budaya kerja yang aman dan sehat</li>
+      </ul>
+      <h3>Alat Pelindung Diri (APD)</h3>
+      <p>APD adalah perlengkapan yang harus digunakan pekerja untuk melindungi diri dari bahaya di tempat kerja. Contoh APD: helm, sarung tangan, sepatu safety, masker, kacamata pelindung, dan ear plug.</p>
+     </div>
+     <div id="quiz1-container">
+      <h3>🎯 Quiz Modul 1</h3>
+      <div class="quiz-question">
+       <p><strong>1. Apa kepanjangan dari K3LH?</strong></p>
+       <div class="quiz-options" id="q1-options">
+        <div class="quiz-option" onclick="selectAnswer(1, 1, 1)">
+         A. Keselamatan, Kesehatan Kerja, dan Lingkungan Hidup
+        </div>
+        <div class="quiz-option" onclick="selectAnswer(1, 1, 0)">
+         B. Keamanan, Kesejahteraan, dan Lingkungan Hijau
+        </div>
+        <div class="quiz-option" onclick="selectAnswer(1, 1, 0)">
+         C. Keselamatan Kerja dan Lingkungan Hidup
+        </div>
+       </div>
+      </div>
+      <div class="quiz-question">
+       <p><strong>2. Manakah yang BUKAN termasuk APD?</strong></p>
+       <div class="quiz-options" id="q2-options">
+        <div class="quiz-option" onclick="selectAnswer(1, 2, 0)">
+         A. Helm Safety
+        </div>
+        <div class="quiz-option" onclick="selectAnswer(1, 2, 1)">
+         B. Jam Tangan
+        </div>
+        <div class="quiz-option" onclick="selectAnswer(1, 2, 0)">
+         C. Sarung Tangan
+        </div>
+       </div>
+      </div>
+      <div class="quiz-question">
+       <p><strong>3. Apa tujuan utama K3LH?</strong></p>
+       <div class="quiz-options" id="q3-options">
+        <div class="quiz-option" onclick="selectAnswer(1, 3, 0)">
+         A. Meningkatkan keuntungan perusahaan
+        </div>
+        <div class="quiz-option" onclick="selectAnswer(1, 3, 1)">
+         B. Melindungi pekerja dari bahaya dan risiko kerja
+        </div>
+        <div class="quiz-option" onclick="selectAnswer(1, 3, 0)">
+         C. Mempercepat proses produksi
+        </div>
+       </div>
+      </div>
+      <div id="quiz1-result" style="display: none;"></div>
+      <div class="btn-group"><button class="btn" onclick="submitQuiz(1)" id="submit-quiz1">Kirim Jawaban</button>
+      </div>
+     </div>
+     <div class="btn-group" style="margin-top: 2rem;"><button class="btn btn-secondary" onclick="showPage('landing')">⬅️ Kembali</button> <button class="btn" onclick="showPage('module2')" id="next-module1" disabled> Modul Berikutnya ➡️ </button>
+     </div>
+    </div>
+   </div><!-- Module 2 - Pembelajaran -->
+   <div id="module2" class="page">
+    <div class="card">
+     <h2>📚 Modul 2: Prosedur Keselamatan Kerja</h2>
+     <div class="material-content">
+      <h3>Prosedur Keselamatan Dasar</h3>
+      <p>Setiap tempat kerja memiliki prosedur keselamatan yang harus dipatuhi oleh seluruh pekerja untuk menghindari kecelakaan dan menciptakan lingkungan kerja yang aman.</p>
+      <h3>5 Prinsip Dasar Keselamatan Kerja:</h3>
+      <ul>
+       <li><strong>Identifikasi Bahaya:</strong> Kenali potensi bahaya di tempat kerja</li>
+       <li><strong>Penilaian Risiko:</strong> Evaluasi tingkat risiko dari setiap bahaya</li>
+       <li><strong>Pengendalian Risiko:</strong> Terapkan langkah pencegahan</li>
+       <li><strong>Pelatihan:</strong> Berikan edukasi K3LH kepada pekerja</li>
+       <li><strong>Monitoring:</strong> Lakukan pengawasan dan evaluasi berkala</li>
+      </ul>
+      <h3>Tindakan Darurat</h3>
+      <p>Setiap pekerja harus mengetahui prosedur tindakan darurat seperti jalur evakuasi, titik kumpul, nomor darurat, dan cara menggunakan APAR (Alat Pemadam Api Ringan).</p>
+     </div>
+     <div id="quiz2-container">
+      <h3>🎯 Quiz Modul 2</h3>
+      <div class="quiz-question">
+       <p><strong>1. Berapa jumlah prinsip dasar keselamatan kerja?</strong></p>
+       <div class="quiz-options" id="q4-options">
+        <div class="quiz-option" onclick="selectAnswer(2, 4, 0)">
+         A. 3 Prinsip
+        </div>
+        <div class="quiz-option" onclick="selectAnswer(2, 4, 1)">
+         B. 5 Prinsip
+        </div>
+        <div class="quiz-option" onclick="selectAnswer(2, 4, 0)">
+         C. 7 Prinsip
+        </div>
+       </div>
+      </div>
+      <div class="quiz-question">
+       <p><strong>2. Apa yang harus dilakukan pertama kali dalam prosedur keselamatan?</strong></p>
+       <div class="quiz-options" id="q5-options">
+        <div class="quiz-option" onclick="selectAnswer(2, 5, 1)">
+         A. Identifikasi Bahaya
+        </div>
+        <div class="quiz-option" onclick="selectAnswer(2, 5, 0)">
+         B. Monitoring
+        </div>
+        <div class="quiz-option" onclick="selectAnswer(2, 5, 0)">
+         C. Pelatihan
+        </div>
+       </div>
+      </div>
+      <div class="quiz-question">
+       <p><strong>3. Apa kepanjangan dari APAR?</strong></p>
+       <div class="quiz-options" id="q6-options">
+        <div class="quiz-option" onclick="selectAnswer(2, 6, 1)">
+         A. Alat Pemadam Api Ringan
+        </div>
+        <div class="quiz-option" onclick="selectAnswer(2, 6, 0)">
+         B. Alat Pengaman Api Ringan
+        </div>
+        <div class="quiz-option" onclick="selectAnswer(2, 6, 0)">
+         C. Alat Pelindung Api Ringan
+        </div>
+       </div>
+      </div>
+      <div id="quiz2-result" style="display: none;"></div>
+      <div class="btn-group"><button class="btn" onclick="submitQuiz(2)" id="submit-quiz2">Kirim Jawaban</button>
+      </div>
+     </div>
+     <div class="btn-group" style="margin-top: 2rem;"><button class="btn btn-secondary" onclick="showPage('module1')">⬅️ Kembali</button> <button class="btn" onclick="showPage('badges')" id="next-module2" disabled> Lihat Badge &amp; Poin ➡️ </button>
+     </div>
+    </div>
+   </div><!-- Halaman Badge & Poin -->
+   <div id="badges" class="page">
+    <div class="card">
+     <h2>🏆 Badge &amp; Pencapaian</h2>
+     <div class="stats-container">
+      <div class="stat-box">
+       <div class="stat-value" id="total-points">
+        0
+       </div>
+       <div class="stat-label">
+        Total Poin
+       </div>
+      </div>
+      <div class="stat-box">
+       <div class="stat-value" id="total-badges">
+        0/3
+       </div>
+       <div class="stat-label">
+        Badge Terkumpul
+       </div>
+      </div>
+     </div>
+     <div class="progress-container">
+      <div class="progress-bar" id="badge-progress">
+       0%
+      </div>
+     </div>
+     <h3 style="margin-top: 2rem;">🎖️ Koleksi Badge</h3>
+     <div class="badge-container">
+      <div class="badge-item" id="badge-apd">
+       <div class="badge-icon">
+        🦺
+       </div>
+       <div class="badge-name" id="badge-1-name">
+        Ahli APD
+       </div>
+       <div class="badge-desc">
+        Selesaikan Modul 1
+       </div>
+      </div>
+      <div class="badge-item" id="badge-supervisor">
+       <div class="badge-icon">
+        👮
+       </div>
+       <div class="badge-name" id="badge-2-name">
+        Pengawas Keselamatan
+       </div>
+       <div class="badge-desc">
+        Skor quiz ≥ 80%
+       </div>
+      </div>
+      <div class="badge-item" id="badge-ranger">
+       <div class="badge-icon">
+        🌿
+       </div>
+       <div class="badge-name" id="badge-3-name">
+        Ranger Lingkungan
+       </div>
+       <div class="badge-desc">
+        Selesaikan semua materi
+       </div>
+      </div>
+     </div>
+     <div class="btn-group"><button class="btn btn-secondary" onclick="showPage('module2')">⬅️ Kembali ke Materi</button> <button class="btn" onclick="showPage('landing')">🏠 Halaman Utama</button>
+     </div>
+    </div>
+   </div><!-- Teacher Login -->
+   <div id="teacher-login" class="page">
+    <div class="card">
+     <h2>👨‍🏫 Login Dashboard Guru</h2>
+     <div class="login-form">
+      <div id="login-error" style="display: none;" class="error-message"></div>
+      <div class="form-group"><label for="teacher-password">Password:</label> <input type="password" id="teacher-password" placeholder="Masukkan password">
+      </div>
+      <div class="btn-group"><button class="btn" onclick="loginTeacher()">🔓 Login</button> <button class="btn btn-secondary" onclick="showPage('landing')">⬅️ Kembali</button>
+      </div>
+     </div>
+    </div>
+   </div><!-- Teacher Dashboard -->
+   <div id="teacher-dashboard" class="page">
+    <div class="card">
+     <h2>📊 Dashboard Guru</h2>
+     <div class="stats-container">
+      <div class="stat-box">
+       <div class="stat-value" id="dashboard-total-students">
+        0
+       </div>
+       <div class="stat-label">
+        Total Siswa
+       </div>
+      </div>
+      <div class="stat-box">
+       <div class="stat-value" id="dashboard-avg-progress">
+        0%
+       </div>
+       <div class="stat-label">
+        Rata-rata Progress
+       </div>
+      </div>
+     </div>
+     <h3>Daftar Siswa</h3>
+     <div style="overflow-x: auto;">
+      <table class="dashboard-table">
+       <thead>
+        <tr>
+         <th>Nama Siswa</th>
+         <th>Total Poin</th>
+         <th>Badge</th>
+         <th>Progress</th>
+         <th>Terakhir Akses</th>
+        </tr>
+       </thead>
+       <tbody id="student-table-body">
+        <tr>
+         <td colspan="5" style="text-align: center; padding: 2rem;">Belum ada data siswa</td>
+        </tr>
+       </tbody>
+      </table>
+     </div>
+     <div class="btn-group" style="margin-top: 2rem;"><button class="btn btn-secondary" onclick="showPage('landing')">⬅️ Kembali</button> <button class="btn" onclick="resetAllData()" style="background: #d63031;"> 🗑️ Reset Semua Data </button>
+     </div>
+    </div>
+   </div>
+  </div>
+  <script>
+    // Configuration
+    const defaultConfig = {
+      app_title: "🎮 K3LH Learning Game",
+      landing_subtitle: "Belajar Keselamatan, Kesehatan Kerja, dan Lingkungan Hidup dengan cara yang menyenangkan!",
+      module_title: "📚 Modul 1: Pengenalan K3LH",
+      badge_1_name: "Ahli APD",
+      badge_2_name: "Pengawas Keselamatan",
+      badge_3_name: "Ranger Lingkungan",
+      primary_color: "#667eea",
+      secondary_color: "#764ba2",
+      text_color: "#333333",
+      background_color: "#667eea",
+      button_color: "#667eea"
+    };
+
+    let currentStudent = {
+      name: '',
+      points: 0,
+      progress: 0,
+      badges: [],
+      quiz1Score: 0,
+      quiz2Score: 0,
+      module1Complete: false,
+      module2Complete: false,
+      lastAccess: new Date().toISOString()
+    };
+
+    let quiz1Answers = {};
+    let quiz2Answers = {};
+
+    // Initialize
+    function init() {
+      loadProgress();
+      updateAllProgress();
+      checkBadges();
+    }
+
+    // Page Navigation
+    function showPage(pageId) {
+      const pages = document.querySelectorAll('.page');
+      pages.forEach(page => page.classList.remove('active'));
+      document.getElementById(pageId).classList.add('active');
+
+      if (pageId === 'teacher-dashboard') {
+        loadTeacherDashboard();
+      }
+
+      if (pageId === 'badges') {
+        updateBadgeDisplay();
+      }
+    }
+
+    // Start Learning
+    function startLearning() {
+      const nameInput = document.getElementById('student-name');
+      const name = nameInput.value.trim();
+
+      if (!name) {
+        const errorDiv = document.createElement('div');
+        errorDiv.className = 'error-message';
+        errorDiv.textContent = 'Silakan masukkan nama Anda terlebih dahulu!';
+        nameInput.parentElement.parentElement.insertBefore(errorDiv, nameInput.parentElement);
+        setTimeout(() => errorDiv.remove(), 3000);
+        return;
+      }
+
+      currentStudent.name = name;
+      currentStudent.lastAccess = new Date().toISOString();
+      saveProgress();
+      showPage('module1');
+    }
+
+    // Quiz Functions
+    function selectAnswer(module, questionNum, isCorrect) {
+      const optionsContainer = document.getElementById(`q${questionNum}-options`);
+      const options = optionsContainer.querySelectorAll('.quiz-option');
+      
+      options.forEach(option => {
+        option.classList.remove('selected');
+      });
+
+      event.target.classList.add('selected');
+
+      if (module === 1) {
+        quiz1Answers[questionNum] = isCorrect;
+      } else {
+        quiz2Answers[questionNum] = isCorrect;
+      }
+    }
+
+    function submitQuiz(module) {
+      let answers, totalQuestions, resultContainer, nextButton;
+
+      if (module === 1) {
+        answers = quiz1Answers;
+        totalQuestions = 3;
+        resultContainer = document.getElementById('quiz1-result');
+        nextButton = document.getElementById('next-module1');
+      } else {
+        answers = quiz2Answers;
+        totalQuestions = 3;
+        resultContainer = document.getElementById('quiz2-result');
+        nextButton = document.getElementById('next-module2');
+      }
+
+      if (Object.keys(answers).length < totalQuestions) {
+        const errorDiv = document.createElement('div');
+        errorDiv.className = 'error-message';
+        errorDiv.textContent = 'Silakan jawab semua pertanyaan!';
+        resultContainer.parentElement.insertBefore(errorDiv, resultContainer);
+        setTimeout(() => errorDiv.remove(), 3000);
+        return;
+      }
+
+      let correctAnswers = 0;
+      Object.values(answers).forEach(isCorrect => {
+        if (isCorrect) correctAnswers++;
+      });
+
+      const score = Math.round((correctAnswers / totalQuestions) * 100);
+      const pointsEarned = correctAnswers * 10;
+
+      // Show results
+      for (let i = 1; i <= totalQuestions; i++) {
+        const questionNum = module === 1 ? i : i + 3;
+        const optionsContainer = document.getElementById(`q${questionNum}-options`);
+        const options = optionsContainer.querySelectorAll('.quiz-option');
+        
+        options.forEach((option, index) => {
+          option.style.pointerEvents = 'none';
+          if (answers[questionNum] === 1 && option.classList.contains('selected')) {
+            option.classList.add('correct');
+          } else if (answers[questionNum] === 0 && option.classList.contains('selected')) {
+            option.classList.add('incorrect');
+          }
+        });
+      }
+
+      currentStudent.points += pointsEarned;
+      
+      if (module === 1) {
+        currentStudent.quiz1Score = score;
+        currentStudent.module1Complete = true;
+        currentStudent.progress = 33;
+      } else {
+        currentStudent.quiz2Score = score;
+        currentStudent.module2Complete = true;
+        currentStudent.progress = 100;
+      }
+
+      resultContainer.innerHTML = `
+        <div class="quiz-result">
+          <h3>🎉 Quiz Selesai!</h3>
+          <div class="quiz-result-score">${score}%</div>
+          <p>Jawaban Benar: ${correctAnswers}/${totalQuestions}</p>
+          <p>Poin yang Didapat: +${pointsEarned} poin</p>
+        </div>
+      `;
+      resultContainer.style.display = 'block';
+
+      document.getElementById(`submit-quiz${module}`).disabled = true;
+      nextButton.disabled = false;
+
+      saveProgress();
+      updateAllProgress();
+      checkBadges();
+    }
+
+    // Badge System
+    function checkBadges() {
+      const badges = [];
+
+      // Badge 1: Ahli APD (Complete Module 1)
+      if (currentStudent.module1Complete) {
+        badges.push('apd');
+        document.getElementById('badge-apd').classList.add('earned');
+      }
+
+      // Badge 2: Pengawas Keselamatan (Score >= 80%)
+      const avgScore = (currentStudent.quiz1Score + currentStudent.quiz2Score) / 2;
+      if (avgScore >= 80 && currentStudent.module1Complete) {
+        badges.push('supervisor');
+        document.getElementById('badge-supervisor').classList.add('earned');
+      }
+
+      // Badge 3: Ranger Lingkungan (Complete all modules)
+      if (currentStudent.module1Complete && currentStudent.module2Complete) {
+        badges.push('ranger');
+        document.getElementById('badge-ranger').classList.add('earned');
+      }
+
+      currentStudent.badges = badges;
+      saveProgress();
+    }
+
+    function updateBadgeDisplay() {
+      document.getElementById('total-points').textContent = currentStudent.points;
+      document.getElementById('total-badges').textContent = `${currentStudent.badges.length}/3`;
+      
+      const badgeProgress = document.getElementById('badge-progress');
+      const progressPercent = (currentStudent.badges.length / 3) * 100;
+      badgeProgress.style.width = progressPercent + '%';
+      badgeProgress.textContent = Math.round(progressPercent) + '%';
+    }
+
+    // Progress Functions
+    function updateAllProgress() {
+      const landingProgress = document.getElementById('landing-progress');
+      const badgeProgress = document.getElementById('badge-progress');
+
+      landingProgress.style.width = currentStudent.progress + '%';
+      landingProgress.textContent = currentStudent.progress + '%';
+
+      if (badgeProgress) {
+        const progressPercent = (currentStudent.badges.length / 3) * 100;
+        badgeProgress.style.width = progressPercent + '%';
+        badgeProgress.textContent = Math.round(progressPercent) + '%';
+      }
+    }
+
+    // Local Storage Functions
+    function saveProgress() {
+      currentStudent.lastAccess = new Date().toISOString();
+      
+      let students = JSON.parse(localStorage.getItem('k3lh_students') || '[]');
+      const existingIndex = students.findIndex(s => s.name === currentStudent.name);
+
+      if (existingIndex >= 0) {
+        students[existingIndex] = currentStudent;
+      } else {
+        students.push(currentStudent);
+      }
+
+      localStorage.setItem('k3lh_students', JSON.stringify(students));
+    }
+
+    function loadProgress() {
+      const students = JSON.parse(localStorage.getItem('k3lh_students') || '[]');
+      if (students.length > 0) {
+        const lastStudent = students[students.length - 1];
+        if (lastStudent.name) {
+          currentStudent = lastStudent;
+          document.getElementById('student-name').value = currentStudent.name;
+        }
+      }
+    }
+
+    // Teacher Dashboard Functions
+    function loginTeacher() {
+      const password = document.getElementById('teacher-password').value;
+      const errorDiv = document.getElementById('login-error');
+
+      if (password === 'gurugenz') {
+        showPage('teacher-dashboard');
+        document.getElementById('teacher-password').value = '';
+        errorDiv.style.display = 'none';
+      } else {
+        errorDiv.textContent = '❌ Password salah! Coba lagi.';
+        errorDiv.style.display = 'block';
+      }
+    }
+
+    function loadTeacherDashboard() {
+      const students = JSON.parse(localStorage.getItem('k3lh_students') || '[]');
+      const tableBody = document.getElementById('student-table-body');
+      
+      document.getElementById('dashboard-total-students').textContent = students.length;
+
+      if (students.length === 0) {
+        tableBody.innerHTML = `
+          <tr>
+            <td colspan="5" style="text-align: center; padding: 2rem;">
+              Belum ada data siswa
+            </td>
+          </tr>
+        `;
+        document.getElementById('dashboard-avg-progress').textContent = '0%';
+        return;
+      }
+
+      let totalProgress = 0;
+      let tableHTML = '';
+
+      students.forEach(student => {
+        totalProgress += student.progress;
+        const badgeText = student.badges.length > 0 ? student.badges.join(', ') : '-';
+        const lastAccess = new Date(student.lastAccess).toLocaleDateString('id-ID');
+
+        tableHTML += `
+          <tr>
+            <td>${student.name}</td>
+            <td>${student.points} poin</td>
+            <td>${badgeText}</td>
+            <td>${student.progress}%</td>
+            <td>${lastAccess}</td>
+          </tr>
+        `;
+      });
+
+      tableBody.innerHTML = tableHTML;
+      
+      const avgProgress = Math.round(totalProgress / students.length);
+      document.getElementById('dashboard-avg-progress').textContent = avgProgress + '%';
+    }
+
+    function resetAllData() {
+      const confirmDiv = document.createElement('div');
+      confirmDiv.style.cssText = 'position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: white; padding: 2rem; border-radius: 15px; box-shadow: 0 20px 60px rgba(0,0,0,0.3); z-index: 1000; text-align: center;';
+      confirmDiv.innerHTML = `
+        <h3 style="color: #d63031; margin-bottom: 1rem;">⚠️ Konfirmasi Reset</h3>
+        <p style="margin-bottom: 1.5rem;">Apakah Anda yakin ingin menghapus semua data siswa?</p>
+        <button class="btn" onclick="confirmReset(true)" style="background: #d63031;">Ya, Hapus Semua</button>
+        <button class="btn btn-secondary" onclick="confirmReset(false)" style="margin-left: 1rem;">Batal</button>
+      `;
+      
+      const backdrop = document.createElement('div');
+      backdrop.style.cssText = 'position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 999;';
+      backdrop.id = 'reset-backdrop';
+      
+      document.body.appendChild(backdrop);
+      document.body.appendChild(confirmDiv);
+      window.resetConfirmDiv = confirmDiv;
+    }
+
+    function confirmReset(confirm) {
+      if (confirm) {
+        localStorage.removeItem('k3lh_students');
+        const successDiv = document.createElement('div');
+        successDiv.className = 'success-message';
+        successDiv.textContent = '✅ Semua data siswa berhasil dihapus!';
+        document.querySelector('#teacher-dashboard .card').insertBefore(
+          successDiv,
+          document.querySelector('#teacher-dashboard .card').firstChild
+        );
+        setTimeout(() => successDiv.remove(), 3000);
+        loadTeacherDashboard();
+      }
+      
+      document.getElementById('reset-backdrop').remove();
+      window.resetConfirmDiv.remove();
+    }
+
+    // SDK Integration
+    async function onConfigChange(config) {
+      document.getElementById('app-title').textContent = config.app_title || defaultConfig.app_title;
+      document.getElementById('landing-subtitle').textContent = config.landing_subtitle || defaultConfig.landing_subtitle;
+      document.getElementById('module-title').textContent = config.module_title || defaultConfig.module_title;
+      document.getElementById('badge-1-name').textContent = config.badge_1_name || defaultConfig.badge_1_name;
+      document.getElementById('badge-2-name').textContent = config.badge_2_name || defaultConfig.badge_2_name;
+      document.getElementById('badge-3-name').textContent = config.badge_3_name || defaultConfig.badge_3_name;
+
+      // Apply colors
+      const primaryColor = config.primary_color || defaultConfig.primary_color;
+      const secondaryColor = config.secondary_color || defaultConfig.secondary_color;
+      const textColor = config.text_color || defaultConfig.text_color;
+      const backgroundColor = config.background_color || defaultConfig.background_color;
+      const buttonColor = config.button_color || defaultConfig.button_color;
+
+      document.body.style.background = `linear-gradient(135deg, ${backgroundColor} 0%, ${secondaryColor} 100%)`;
+      
+      const h1Elements = document.querySelectorAll('h1');
+      h1Elements.forEach(el => el.style.color = primaryColor);
+      
+      const h2Elements = document.querySelectorAll('h2');
+      h2Elements.forEach(el => el.style.color = secondaryColor);
+      
+      const h3Elements = document.querySelectorAll('h3');
+      h3Elements.forEach(el => el.style.color = primaryColor);
+      
+      const textElements = document.querySelectorAll('p, li, td, label');
+      textElements.forEach(el => {
+        if (!el.closest('.btn') && !el.closest('.stat-box')) {
+          el.style.color = textColor;
+        }
+      });
+
+      const buttons = document.querySelectorAll('.btn:not(.btn-secondary)');
+      buttons.forEach(btn => {
+        btn.style.background = `linear-gradient(135deg, ${buttonColor} 0%, ${secondaryColor} 100%)`;
+      });
+
+      const statBoxes = document.querySelectorAll('.stat-box');
+      statBoxes.forEach(box => {
+        box.style.background = `linear-gradient(135deg, ${primaryColor} 0%, ${secondaryColor} 100%)`;
+      });
+
+      const progressBars = document.querySelectorAll('.progress-bar');
+      progressBars.forEach(bar => {
+        bar.style.background = `linear-gradient(90deg, ${primaryColor} 0%, ${secondaryColor} 100%)`;
+      });
+
+      const tableHeaders = document.querySelectorAll('.dashboard-table th');
+      tableHeaders.forEach(th => {
+        th.style.background = primaryColor;
+      });
+    }
+
+    function mapToCapabilities(config) {
+      return {
+        recolorables: [
+          {
+            get: () => config.background_color || defaultConfig.background_color,
+            set: (value) => {
+              if (window.elementSdk) {
+                window.elementSdk.config.background_color = value;
+                window.elementSdk.setConfig({ background_color: value });
+              }
+            }
+          },
+          {
+            get: () => config.secondary_color || defaultConfig.secondary_color,
+            set: (value) => {
+              if (window.elementSdk) {
+                window.elementSdk.config.secondary_color = value;
+                window.elementSdk.setConfig({ secondary_color: value });
+              }
+            }
+          },
+          {
+            get: () => config.text_color || defaultConfig.text_color,
+            set: (value) => {
+              if (window.elementSdk) {
+                window.elementSdk.config.text_color = value;
+                window.elementSdk.setConfig({ text_color: value });
+              }
+            }
+          },
+          {
+            get: () => config.primary_color || defaultConfig.primary_color,
+            set: (value) => {
+              if (window.elementSdk) {
+                window.elementSdk.config.primary_color = value;
+                window.elementSdk.setConfig({ primary_color: value });
+              }
+            }
+          },
+          {
+            get: () => config.button_color || defaultConfig.button_color,
+            set: (value) => {
+              if (window.elementSdk) {
+                window.elementSdk.config.button_color = value;
+                window.elementSdk.setConfig({ button_color: value });
+              }
+            }
+          }
+        ],
+        borderables: [],
+        fontEditable: undefined,
+        fontSizeable: undefined
+      };
+    }
+
+    function mapToEditPanelValues(config) {
+      return new Map([
+        ["app_title", config.app_title || defaultConfig.app_title],
+        ["landing_subtitle", config.landing_subtitle || defaultConfig.landing_subtitle],
+        ["module_title", config.module_title || defaultConfig.module_title],
+        ["badge_1_name", config.badge_1_name || defaultConfig.badge_1_name],
+        ["badge_2_name", config.badge_2_name || defaultConfig.badge_2_name],
+        ["badge_3_name", config.badge_3_name || defaultConfig.badge_3_name]
+      ]);
+    }
+
+    // Initialize SDK
+    if (window.elementSdk) {
+      window.elementSdk.init({
+        defaultConfig,
+        onConfigChange,
+        mapToCapabilities,
+        mapToEditPanelValues
+      });
+    }
+
+    // Initialize app
+    window.addEventListener('DOMContentLoaded', init);
+  </script>
+ <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9a7a5750d664ce0e',t:'MTc2NDY3MzQ0MS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
